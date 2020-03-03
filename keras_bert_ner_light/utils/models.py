@@ -4,14 +4,19 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: models.py.py
+@File: models.py
 @Time: 2020/3/2 4:00 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+
+from keras.layers import *
+from keras.models import Model
+from keras_contrib.layers import CRF
 
 
 class NerBaseModel:
@@ -30,11 +35,11 @@ class NerBaseModel:
     def build(self):
         """Ner模型
         """
-        x = Input(shape=(self.max_len, self.embedding_dim), name="Input-Features")
-        x = Lambda(lambda X: X[:, 1:], name="Ignore-CLS")(x)
+        x_in = Input(shape=(self.max_len, self.embedding_dim), name="Input-Features")
+        x = Lambda(lambda X: X[:, 1:], name="Ignore-CLS")(x_in)
         x = self._task_layers(x)
         y = CRF(self.numb_tags, sparse_target=True, name="CRF")(x)
-        model = Model(x, y)
+        model = Model(x_in, y)
         return model
 
     def _task_layers(self, layer):

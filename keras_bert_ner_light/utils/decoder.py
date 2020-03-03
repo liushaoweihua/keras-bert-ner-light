@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: decoder.py.py
+@File: decoder.py
 @Time: 2020/3/2 3:54 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division

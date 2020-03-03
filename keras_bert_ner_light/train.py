@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: train.py.py
+@File: train.py
 @Time: 2020/3/2 4:52 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -31,8 +32,6 @@ def train(args):
     """模型训练流程
     """
     # 参数替换
-    # bert_encode_server 输出字向量的第一个位置为[CLS]，应该mask掉，因此原句长应增加1
-    args.max_len += 1
     # 环境设置
     os.environ["CUDA_VISIBLE_DEVICES"] = args.device_map if args.device_map != "cpu" else ""
     if not os.path.exists(args.save_path):
@@ -47,7 +46,7 @@ def train(args):
     if args.do_eval:
         dev_data, dev_y = processor.process(args.dev_data, args.max_len)
         dev_x = featurizer.parse(dev_data)
-        devs = np.array([dev_x, dev_y])
+        devs = [np.array(dev_x), np.array(dev_y)]
     else:
         devs = None
     # 模型准备

@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: processor.py.py
+@File: processor.py
 @Time: 2020/3/2 3:00 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -42,13 +43,13 @@ class Processor:
         tags = set()
         for item in self.data:
             for tag in item[1].split(" "):
-                entity_type = tag.split("-")[-1]
-                if entity_type != "O":
+                if len(tag) == 1:
+                    tags.add(tag)
+                else:
+                    entity_type = tag.split("-")[-1]
                     tags.add("B-%s" % entity_type)
                     tags.add("I-%s" % entity_type)
                     tags.add("S-%s" % entity_type)
-                else:
-                    tags.add(tag)
         tags = list(tags)
         self.tag_to_id = {tags[i]: i for i in range(len(tags))}
         if self.tag_padding not in self.tag_to_id:
@@ -61,10 +62,13 @@ class Processor:
     def process(self, path, max_len):
         """数据生成
         """
+        # 去除[CLS]和[SEP]两个额外字符所占用的句长
+        max_len -= 2
         data = self._load_data(path)
-        data = np.random.shuffle(data)
+        np.random.shuffle(data)
         texts, tags = np.stack(data, axis=-1)
-        tags = self._pad_and_truncate(tags, max_len - 2)
+        texts = [text[:max_len] for text in texts]
+        tags = self._pad_and_truncate(tags, max_len)
 
         return texts, tags
 

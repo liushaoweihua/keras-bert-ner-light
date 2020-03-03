@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: predict.py.py
+@File: predict.py
 @Time: 2020/3/2 5:12 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -46,9 +47,12 @@ def build_trained_model(args):
     return id_to_tag, viterbi_decoder
 
 
-def get_model_inputs(url, port, timeout, texts):
+def get_model_inputs(url, port, timeout, texts, max_len):
     """获取模型的预测输入
     """
+    # 去除[CLS]和[SEP]两个额外字符所占用的句长
+    max_len -= 2
+    texts = [text[:max_len] for text in texts]
     featurizer = Featurizer(url, port, timeout)
     if isinstance(texts, str):
         texts = [texts]

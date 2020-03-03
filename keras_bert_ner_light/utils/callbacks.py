@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: callbacks.py.py
+@File: callbacks.py
 @Time: 2020/3/2 3:51 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -50,10 +51,10 @@ class Accuracy(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         viterbi = Viterbi(self.model, self.numb_tags)
-        val_true = np.squeeze(self.validation_data[2], axis=-1)
+        val_true = np.squeeze(self.validation_data[1], axis=-1)
         mask = np.array(1. - to_categorical(val_true, self.numb_tags)[:, :, self.mask_tag_id]) \
             if self.mask_tag_id else None
-        val_pred = viterbi.decode([self.validation_data[0], self.validation_data[1]])
+        val_pred = viterbi.decode(self.validation_data[0])
         self._call_acc(val_true, val_pred, mask, epoch)
 
     def _call_acc(self, val_true, val_pred, mask, epoch):
@@ -80,7 +81,7 @@ class Accuracy(Callback):
                         right_tag_numb_dict[self.id_to_tag[tag_pred]] += 1
                     total_tag_numb_dict[self.id_to_tag[tag_true]] += 1
         sentence_acc = right_sentence_numb / total_sentence_numb
-        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] for tag in right_tag_numb_dict}
+        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] if total_tag_numb_dict[tag] != 0 else "None" for tag in right_tag_numb_dict}
         callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n" \
                         + "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \

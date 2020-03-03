@@ -4,9 +4,10 @@
 @Author: Shaoweihua.Liu
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
-@File: featurizer.py.py
+@File: featurizer.py
 @Time: 2020/3/2 3:39 PM
 """
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -27,6 +28,8 @@ class Featurizer:
     def parse(self, data):
         if isinstance(data, str):
             data = [data]
+        if isinstance(data, np.ndarray):
+            data = data.tolist()
         timeout = self.timeout * len(data)
         r = requests.post(
             self.url,

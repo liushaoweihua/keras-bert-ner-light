@@ -136,7 +136,7 @@ def convert_lst_to_features(lst_str, max_seq_length, max_position_embeddings,
         input_mask += [0] * pad_len
         input_type_ids += [0] * pad_len
 
-        assert len(input_ids) == max_seq_length
+        assert len(input_ids) == max_seq_length, "%s-%s" %(len(input_ids), max_seq_length)
         assert len(input_mask) == max_seq_length
         assert len(input_type_ids) == max_seq_length
 
