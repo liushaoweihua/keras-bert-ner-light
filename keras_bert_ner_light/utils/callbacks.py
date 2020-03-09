@@ -5,7 +5,7 @@
 @Contact: liushaoweihua@126.com
 @Site: github.com/liushaoweihua
 @File: callbacks.py
-@Time: 2020/3/3 10:37 AM
+@Time: 2020/3/2 3:51 PM
 """
 
 
@@ -51,10 +51,10 @@ class Accuracy(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         viterbi = Viterbi(self.model, self.numb_tags)
-        val_true = np.squeeze(self.validation_data[2], axis=-1)
+        val_true = np.squeeze(self.validation_data[1], axis=-1)
         mask = np.array(1. - to_categorical(val_true, self.numb_tags)[:, :, self.mask_tag_id]) \
             if self.mask_tag_id else None
-        val_pred = viterbi.decode([self.validation_data[0], self.validation_data[1]])
+        val_pred = viterbi.decode(self.validation_data[0])
         self._call_acc(val_true, val_pred, mask, epoch, logs)
 
     def _call_acc(self, val_true, val_pred, mask, epoch, logs):
@@ -81,23 +81,23 @@ class Accuracy(Callback):
                         right_tag_numb_dict[self.id_to_tag[tag_pred]] += 1
                     total_tag_numb_dict[self.id_to_tag[tag_true]] += 1
         sentence_acc = right_sentence_numb / total_sentence_numb
-        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] if total_tag_numb_dict[tag] != 0 else "None"
-                   for tag in right_tag_numb_dict}
+        tag_acc = {tag: right_tag_numb_dict[tag] / total_tag_numb_dict[tag] if total_tag_numb_dict[tag] != 0 else "None" for tag in right_tag_numb_dict}
         callback_info = "*" * 30 + " Epoch " + str(epoch) + " " + "*" * 30 + "\n"
         callback_info += "Train Loss" + "\t" * 2 + str(logs.get("loss")) + "\n" \
                          + "Valid Loss" + "\t" * 2 + str(logs.get("val_loss")) + "\n" \
                          + "Train Acc" + "\t" * 2 + str(logs.get("crf_accuracy")) + "\n" \
                          + "Valid Acc" + "\t" * 2 + str(logs.get("val_crf_accuracy")) + "\n"
         callback_info += "-" * 25 + " Sentence Accuracy " + "-" * 25 + "\n" \
-                        + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \
-                        + "\t" * 2 + str(right_sentence_numb) + "\t" * 2 + str(total_sentence_numb) + "\t" * 2 + str(sentence_acc) + "\n" \
-                        + "-" * 28 + " Tag Accuracy " + "-" * 27 + "\n" \
-                        + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n"
+                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n" \
+                         + "\t" * 2 + str(right_sentence_numb) + "\t" * 2 + str(total_sentence_numb) + "\t" * 2 + str(
+            sentence_acc) + "\n" \
+                         + "-" * 28 + " Tag Accuracy " + "-" * 27 + "\n" \
+                         + "\t" * 2 + "Right" + "\t" * 2 + "Total" + "\t" * 2 + "Acc" + "\n"
         for tag in tag_acc:
             callback_info += tag + "\t" * 2 \
-                          + str(right_tag_numb_dict[tag]) + "\t" * 2 \
-                          + str(total_tag_numb_dict[tag]) + "\t" * 2 \
-                          + str(tag_acc[tag]) + "\n"
+                             + str(right_tag_numb_dict[tag]) + "\t" * 2 \
+                             + str(total_tag_numb_dict[tag]) + "\t" * 2 \
+                             + str(tag_acc[tag]) + "\n"
         callback_info += "\n"
         print(callback_info)
         if self.save_path is not None:
