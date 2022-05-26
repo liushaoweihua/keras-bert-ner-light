@@ -3,5 +3,5 @@ GPUtil == 1.4.0
 termcolor == 1.1.0
 flask_cors == 3.0.8
 flask_json == 0.3.4
-tensorflow == 1.15.2
+tensorflow == 2.7.2
 flask_compress == 1.4.0
